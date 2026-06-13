@@ -246,3 +246,43 @@ function createFlower(x, y) {
     }
   }, 600);
 }
+
+// Background Music Setup
+const bgMusic = new Audio('Love Me Not-Downringtone.com.mp3');
+bgMusic.loop = true;
+bgMusic.volume = 0; // Start at 0 for fade in
+
+let musicStarted = false;
+
+function playMusicWithFade() {
+  if (musicStarted) return;
+  
+  bgMusic.play().then(() => {
+    musicStarted = true;
+    // Fade in over 5 seconds
+    let vol = 0;
+    const fadeInterval = setInterval(() => {
+      vol += 0.05;
+      if (vol >= 1) {
+        bgMusic.volume = 1;
+        clearInterval(fadeInterval);
+      } else {
+        bgMusic.volume = vol;
+      }
+    }, 250); // 0.05 every 250ms = 1.0 over 5000ms
+  }).catch(err => {
+    console.log("Autoplay blocked. Waiting for user interaction to play music.");
+  });
+}
+
+// Attempt to play after 2.5 seconds
+setTimeout(() => {
+  playMusicWithFade();
+}, 2500);
+
+// Also try on any click in case autoplay was blocked by the browser
+document.addEventListener('click', () => {
+  if (!musicStarted) {
+    playMusicWithFade();
+  }
+});
